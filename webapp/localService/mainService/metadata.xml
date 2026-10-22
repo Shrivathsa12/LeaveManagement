@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+        <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+        <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Validation.V1.xml">
+        <edmx:Include Alias="Validation" Namespace="Org.OData.Validation.V1"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="LeaveManagementService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <Annotation Term="Core.Links">
+                <Collection>
+                    <Record>
+                        <PropertyValue Property="rel" String="author"/>
+                        <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+                    </Record>
+                </Collection>
+            </Annotation>
+            <EntityContainer Name="EntityContainer">
+                <EntitySet Name="Employees" EntityType="LeaveManagementService.Employees">
+                    <NavigationPropertyBinding Path="manager" Target="Employees"/>
+                    <NavigationPropertyBinding Path="leaveRequests" Target="LeaveRequests"/>
+                    <NavigationPropertyBinding Path="leaveBalances" Target="LeaveBalances"/>
+                </EntitySet>
+                <EntitySet Name="LeaveRequests" EntityType="LeaveManagementService.LeaveRequests">
+                    <NavigationPropertyBinding Path="employee" Target="Employees"/>
+                    <NavigationPropertyBinding Path="approvals" Target="LeaveApprovals"/>
+                    <NavigationPropertyBinding Path="documents" Target="LeaveDocuments"/>
+                </EntitySet>
+                <EntitySet Name="LeaveApprovals" EntityType="LeaveManagementService.LeaveApprovals">
+                    <NavigationPropertyBinding Path="leaveRequest" Target="LeaveRequests"/>
+                    <NavigationPropertyBinding Path="approver" Target="Employees"/>
+                </EntitySet>
+                <EntitySet Name="LeaveDocuments" EntityType="LeaveManagementService.LeaveDocuments">
+                    <NavigationPropertyBinding Path="leaveRequest" Target="LeaveRequests"/>
+                </EntitySet>
+                <EntitySet Name="LeaveBalances" EntityType="LeaveManagementService.LeaveBalances">
+                    <NavigationPropertyBinding Path="employee" Target="Employees"/>
+                </EntitySet>
+                <ActionImport Name="submitLeaveRequest" Action="LeaveManagementService.submitLeaveRequest" EntitySet="LeaveRequests"/>
+                <ActionImport Name="approveLeaveRequest" Action="LeaveManagementService.approveLeaveRequest" EntitySet="LeaveRequests"/>
+                <ActionImport Name="rejectLeaveRequest" Action="LeaveManagementService.rejectLeaveRequest" EntitySet="LeaveRequests"/>
+            </EntityContainer>
+            <EntityType Name="Employees">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="employeeNumber" Type="Edm.String" MaxLength="20" Nullable="false"/>
+                <Property Name="firstName" Type="Edm.String" MaxLength="60" Nullable="false"/>
+                <Property Name="lastName" Type="Edm.String" MaxLength="60" Nullable="false"/>
+                <Property Name="email" Type="Edm.String" MaxLength="120" Nullable="false"/>
+                <Property Name="department" Type="Edm.String" MaxLength="80"/>
+                <Property Name="designation" Type="Edm.String" MaxLength="80"/>
+                <Property Name="joiningDate" Type="Edm.Date"/>
+                <Property Name="employmentStatus" Type="Edm.String" MaxLength="20" DefaultValue="Active"/>
+                <NavigationProperty Name="manager" Type="LeaveManagementService.Employees">
+                    <ReferentialConstraint Property="manager_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="manager_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="leaveRequests" Type="Collection(LeaveManagementService.LeaveRequests)" Partner="employee"/>
+                <NavigationProperty Name="leaveBalances" Type="Collection(LeaveManagementService.LeaveBalances)" Partner="employee">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="LeaveRequests">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <NavigationProperty Name="employee" Type="LeaveManagementService.Employees" Nullable="false" Partner="leaveRequests">
+                    <ReferentialConstraint Property="employee_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="employee_ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="leaveType" Type="Edm.String" Nullable="false"/>
+                <Property Name="startDate" Type="Edm.Date" Nullable="false"/>
+                <Property Name="endDate" Type="Edm.Date" Nullable="false"/>
+                <Property Name="totalDays" Type="Edm.Decimal" Precision="5" Scale="2" Nullable="false"/>
+                <Property Name="reason" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="status" Type="Edm.String" MaxLength="30" DefaultValue="Submitted"/>
+                <NavigationProperty Name="approvals" Type="Collection(LeaveManagementService.LeaveApprovals)" Partner="leaveRequest">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="documents" Type="Collection(LeaveManagementService.LeaveDocuments)" Partner="leaveRequest">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="LeaveApprovals">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <NavigationProperty Name="leaveRequest" Type="LeaveManagementService.LeaveRequests" Nullable="false" Partner="approvals">
+                    <ReferentialConstraint Property="leaveRequest_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="leaveRequest_ID" Type="Edm.Guid" Nullable="false"/>
+                <NavigationProperty Name="approver" Type="LeaveManagementService.Employees" Nullable="false">
+                    <ReferentialConstraint Property="approver_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="approver_ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="status" Type="Edm.String" MaxLength="20" DefaultValue="Pending"/>
+                <Property Name="comments" Type="Edm.String" MaxLength="1000"/>
+            </EntityType>
+            <EntityType Name="LeaveDocuments">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <NavigationProperty Name="leaveRequest" Type="LeaveManagementService.LeaveRequests" Nullable="false" Partner="documents">
+                    <ReferentialConstraint Property="leaveRequest_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="leaveRequest_ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="fileName" Type="Edm.String" MaxLength="255" Nullable="false"/>
+                <Property Name="mediaType" Type="Edm.String" MaxLength="100"/>
+                <Property Name="fileSize" Type="Edm.Int32"/>
+                <Property Name="content" Type="Edm.Binary"/>
+            </EntityType>
+            <EntityType Name="LeaveBalances">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <NavigationProperty Name="employee" Type="LeaveManagementService.Employees" Nullable="false" Partner="leaveBalances">
+                    <ReferentialConstraint Property="employee_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="employee_ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="leaveType" Type="Edm.String" Nullable="false"/>
+                <Property Name="leaveYear" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="entitledDays" Type="Edm.Decimal" Precision="5" Scale="2" DefaultValue="0"/>
+                <Property Name="carriedForward" Type="Edm.Decimal" Precision="5" Scale="2" DefaultValue="0"/>
+                <Property Name="usedDays" Type="Edm.Decimal" Precision="5" Scale="2" DefaultValue="0"/>
+                <Property Name="reservedDays" Type="Edm.Decimal" Precision="5" Scale="2" DefaultValue="0"/>
+            </EntityType>
+            <Action Name="submitLeaveRequest" IsBound="false">
+                <Parameter Name="leaveRequestID" Type="Edm.Guid"/>
+                <ReturnType Type="LeaveManagementService.LeaveRequests"/>
+            </Action>
+            <Action Name="approveLeaveRequest" IsBound="false">
+                <Parameter Name="leaveRequestID" Type="Edm.Guid"/>
+                <ReturnType Type="LeaveManagementService.LeaveRequests"/>
+            </Action>
+            <Action Name="rejectLeaveRequest" IsBound="false">
+                <Parameter Name="leaveRequestID" Type="Edm.Guid"/>
+                <ReturnType Type="LeaveManagementService.LeaveRequests"/>
+            </Action>
+            <Annotations Target="LeaveManagementService.Employees/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="LeaveManagementService.LeaveRequests/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="LeaveManagementService.LeaveRequests/leaveType">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Annual"/>
+                            <PropertyValue Property="Value" String="Annual"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Sick"/>
+                            <PropertyValue Property="Value" String="Sick"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Casual"/>
+                            <PropertyValue Property="Value" String="Casual"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Maternity"/>
+                            <PropertyValue Property="Value" String="Maternity"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Unpaid"/>
+                            <PropertyValue Property="Value" String="Unpaid"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="LeaveManagementService.LeaveApprovals/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="LeaveManagementService.LeaveDocuments/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="LeaveManagementService.LeaveBalances/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="LeaveManagementService.LeaveBalances/leaveType">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Annual"/>
+                            <PropertyValue Property="Value" String="Annual"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Sick"/>
+                            <PropertyValue Property="Value" String="Sick"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Casual"/>
+                            <PropertyValue Property="Value" String="Casual"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Maternity"/>
+                            <PropertyValue Property="Value" String="Maternity"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Unpaid"/>
+                            <PropertyValue Property="Value" String="Unpaid"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>
