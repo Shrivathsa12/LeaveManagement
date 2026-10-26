@@ -76,6 +76,30 @@ sap.ui.define([
                     }.bind(this)
                 }
             );
+        },
+
+
+        onOpenApprovalInbox: function () {
+            this.getOwnerComponent()
+                .getRouter()
+                .navTo("ApprovalInbox");
+        },
+
+        onAfterRendering: function () {
+            var oTable = this.byId("leaveRequestsTable");
+
+            oTable.getItems().forEach(function (oRow) {
+                var oContext = oRow.getBindingContext();
+
+                if (oContext) {
+                    console.log(
+                        "Leave status:",
+                        oContext.getProperty("status"),
+                        "| Button visible:",
+                        oRow.getCells()[7].getItems()[0].getVisible()
+                    );
+                }
+            });
         }
 
     });

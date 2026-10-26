@@ -1,28 +1,31 @@
-<mvc:View controllerName="leaveui5.controller.View1"
+<mvc:View
+    controllerName="leaveui5.controller.View1"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    
+    xmlns="sap.m"
+>
     <Page
         id="leaveManagementPage"
-        title="Employee Leave Management">
-
+        title="Employee Leave Management"
+    >
         <content>
             <VBox
                 id="leaveRequestsContainer"
                 class="sapUiSmallMargin"
-                width="auto">
-
+                width="auto"
+            >
                 <Title
                     id="leaveRequestsTitle"
                     text="Leave Requests"
                     level="H2"
-                    class="sapUiSmallMarginBottom" />
+                    class="sapUiSmallMarginBottom"
+                />
 
                 <Toolbar id="leaveRequestsToolbar">
                     <Title
                         id="requestOverviewTitle"
                         text="Request Overview"
-                        level="H3" />
+                        level="H3"
+                    />
 
                     <ToolbarSpacer id="requestToolbarSpacer" />
 
@@ -30,7 +33,14 @@
                         id="refreshButton"
                         text="Refresh"
                         icon="sap-icon://refresh"
-                        press=".onRefresh" />
+                        press=".onRefresh"
+                    />
+                    <Button
+                        text="My Approval Inbox"
+                        icon="sap-icon://inbox"
+                        type="Emphasized"
+                        press=".onOpenApprovalInbox"
+                    />
                 </Toolbar>
 
                 <Table
@@ -38,91 +48,128 @@
                     growing="true"
                     growingScrollToLoad="true"
                     items="{/LeaveRequests}"
-                    noDataText="No leave requests found">
-
+                    noDataText="No leave requests found"
+                >
                     <columns>
                         <Column id="employeeIdColumn">
-                            <Text id="employeeIdColumnText" text="Employee Number" />
+                            <Text
+                                id="employeeIdColumnText"
+                                text="Employee Number"
+                            />
                         </Column>
 
                         <Column id="leaveTypeColumn">
-                            <Text id="leaveTypeColumnText" text="Leave Type" />
+                            <Text
+                                id="leaveTypeColumnText"
+                                text="Leave Type"
+                            />
                         </Column>
 
                         <Column id="startDateColumn">
-                            <Text id="startDateColumnText" text="Start Date" />
+                            <Text
+                                id="startDateColumnText"
+                                text="Start Date"
+                            />
                         </Column>
 
                         <Column id="endDateColumn">
-                            <Text id="endDateColumnText" text="End Date" />
+                            <Text
+                                id="endDateColumnText"
+                                text="End Date"
+                            />
                         </Column>
 
-                        <Column id="daysColumn" hAlign="End">
-                            <Text id="daysColumnText" text="Days" />
+                        <Column
+                            id="daysColumn"
+                            hAlign="End"
+                        >
+                            <Text
+                                id="daysColumnText"
+                                text="Days"
+                            />
                         </Column>
 
                         <Column id="reasonColumn">
-                            <Text id="reasonColumnText" text="Reason" />
+                            <Text
+                                id="reasonColumnText"
+                                text="Reason"
+                            />
                         </Column>
 
                         <Column id="statusColumn">
-                            <Text id="statusColumnText" text="Status" />
+                            <Text
+                                id="statusColumnText"
+                                text="Status"
+                            />
                         </Column>
 
-                        <Column id="actionsColumn" hAlign="Center">
-                            <Text id="actionsColumnText" text="Actions" />
+                        <Column
+                            id="actionsColumn"
+                            hAlign="Center"
+                        >
+                            <Text
+                                id="actionsColumnText"
+                                text="Actions"
+                            />
                         </Column>
                     </columns>
 
                     <items>
                         <ColumnListItem
                             id="leaveRequestRow"
-                            vAlign="Middle">
-
+                            vAlign="Middle"
+                        >
                             <cells>
                                 <Text
                                     id="employeeIdCell"
-                                    text="{employee_ID}" />
+                                    text="{employee/employeeNumber}"
+                                />
 
                                 <Text
                                     id="leaveTypeCell"
-                                    text="{leaveType}" />
+                                    text="{leaveType}"
+                                />
 
                                 <Text
                                     id="startDateCell"
-                                    text="{startDate}" />
+                                    text="{startDate}"
+                                />
 
                                 <Text
                                     id="endDateCell"
-                                    text="{endDate}" />
+                                    text="{endDate}"
+                                />
 
                                 <ObjectNumber
                                     id="totalDaysCell"
-                                    number="{totalDays}" />
+                                    number="{totalDays}"
+                                />
 
                                 <Text
                                     id="reasonCell"
-                                    text="{reason}" />
+                                    text="{reason}"
+                                />
 
                                 <ObjectStatus
                                     id="leaveStatusCell"
                                     text="{status}"
-                                    state="{= ${status} === 'Approved' ? 'Success' : ${status} === 'Rejected' ? 'Error' : ${status} === 'Pending' ? 'Warning' : 'Information' }" />
+                                    state="{= ${status} === 'Approved' ? 'Success' : ${status} === 'Rejected' ? 'Error' : ${status} === 'Pending' ? 'Warning' : 'Information' }"
+                                />
 
                                 <HBox
                                     id="leaveRequestActions"
                                     wrap="Wrap"
                                     renderType="Bare"
                                     alignItems="Center"
-                                    class="sapUiTinyMargin">
-
-                                    <Button
-                                        id="submitLeaveRequestButton"
-                                        text="Submit"
-                                        type="Emphasized"
-                                        enabled="{= ${status} === 'Submitted' }"
-                                        press=".onSubmitLeaveRequest"
-                                        class="sapUiTinyMarginEnd" />
+                                    class="sapUiTinyMargin"
+                                >
+                               
+<Button
+    id="submitLeaveRequestButton"
+    text="Go for Approval"
+    visible="{= ${status} === 'Submitted' }"
+    press=".onSubmitLeaveRequest"
+/>
                                 </HBox>
                             </cells>
                         </ColumnListItem>

@@ -112,12 +112,21 @@
           "target": [
             "TargetView1"
           ]
+        },
+        {
+          "name": "ApprovalInbox",
+          "pattern": "ApprovalInbox",
+          "target": "ApprovalInbox"
         }
       ],
       "targets": {
         "TargetView1": {
           "id": "View1",
           "name": "View1"
+        },
+        "ApprovalInbox": {
+          "viewName": "ApprovalInbox",
+          "viewId": "ApprovalInbox"
         }
       }
     },
